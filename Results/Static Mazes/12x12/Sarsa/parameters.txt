@@ -1,0 +1,14 @@
+#Environmental constants
+GAME = "FrozenLake-v1"
+REWARD_SCHEDULE = (1, -5, -0.1)
+
+EPISODES = 2500 #Total number of learning episodes
+TEST_EPISODES = 100 #Total number of test episodes
+
+#Defining all hyperparameters
+ALPHA = 0.1
+GAMMA = 0.99
+
+MAX_EPSILON = 1.0
+MIN_EPSILON = 0.05
+DECAY_RATE = 0.0005

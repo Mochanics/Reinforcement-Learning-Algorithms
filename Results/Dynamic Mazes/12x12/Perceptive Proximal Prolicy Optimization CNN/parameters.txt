@@ -1,0 +1,34 @@
+#Defining all hyperparameters for PPO
+GAMMA = 0.99 #Discount.
+LAMBDA = 0.95 #GAE parameter.
+CLIP_EPS = 0.2 #Actor/policy clipping.
+LR_ACTOR = 3e-4 #Learning rate of the actor network.
+LR_CRITIC = 3e-4 #Learning rate of the critic network.
+EPOCHS = 10 #Number of learning epochs per episode.
+BATCH_SIZE = 256 #Size of the batch of steps to be taken at random from the rollout buffer
+ROLLOUT_STEPS = 1024 #Current number of time steps to be recorded in a rollout buffer
+ENTROPY_COEF_MAX = 0.15 #Maximum entropy or randomness/uncertainty of the policy. The higher the entropy, the more random the agent actions are (similar probabilities for all actions). The lower the entropy, the more deterministic the agent is.
+CURRICULUM_ENTROPY = 0.1 #Entropy boost/rest. It is the value the entropy variable gets when the curriculum episode count is reached (CURRICULUM_START).
+ENTROPY_COEF_MIN = 0.05 #Minimum entropy at the end of training.
+ENTROPY_DECAY = 0.9995 #How fast the entropy decreases.
+DETERMINISTIC = False #Whether the agent selects actions at random based on probabilities of which one is the best (non-deterministic) or always takes the best action (determinsitic) during testing.
+MAX_EPISODES = 15000 #The number of training episodes..
+
+#Environmental constants
+ENV_NAME = "FrozenLake-v1" #Only this environement is used for this version of PPO.
+P_FROZEN = 0.9 #Probability of a tile being frozen. Used by the random map generation function.
+REWARD_SCHEDULE = (1, -1, -0.01) #When to give a reward to the agent and how high that reward is. The values are: Reach Goal, Reach Hole, Reach Frozen (includes Start), respectively
+TILE_ENCODING = {b'S': 0.0, b'F': 0.0, b'H': -1.0, b'G': 1.0} #Tile encoding for rich state: S (start) = 0.00, F (frozen) = 0.00, H (hole) = -1.00, G (goal) = 1.00. Those values were picked arbitrarily
+GENERATE_MAP_PER_EPISODE = True #Parameter specific to perceptive models. Generates a new map every training episode to learn to generalize hole avoiding behaviour.
+CURRICULUM_START = 2000  #Start of when maps are being randomly generated. The probability of them being randomly generated increases until CURRICULUM_END.
+CURRICULUM_END = 5000    #When ALL maps are randomly generated.
+MAX_STEPS_TRAIN = 100 #Maximum number of steps per training episode.
+
+#Additional non-PPO related constants
+MAX_EVALUATING_EPISODES = 100 #Maximum number of testing/evaluating episodes.
+SAVE_INTERVAL = 100 #After how many training episodes should the weights and biases of the critic and actor neural networks be saved. 
+DEVICE = torch.device( #Checking which devices are available and selecting it based on that.
+    "cuda" if torch.cuda.is_available() else
+    "mps" if torch.backends.mps.is_available() else
+    "cpu"
+)

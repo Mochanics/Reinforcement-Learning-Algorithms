@@ -1,0 +1,32 @@
+#Defining all hyperparameters
+CLIP_GRAD_NORM = 3 #How much to adjust the weight/biases of the policy network to match the target policy network during training. A too big value might lead to overshoots while a too small of a value will increase training time
+LEARNING_RATE = 6e-4 #How much to adjust the weight/biases of the policy network to match the target policy network during training. A too big value might lead to overshoots while a too small of a value will increase training time. A too small of a value however can cause the training to be stuck in a local suboptimal minimum.
+DISCOUNT_FACTOR = 0.93 #Tells how much to take into account future rewards instead of immediate rewards
+BATCH_SIZE = 32 #How big the batch batch of state transitions taken from the replay memory to train the policy network is
+UPDATE_FREQUENCY = 10 #How often to update the target network
+
+EPSILON_MAX = 0.999 if TRAINING_MODE else -1 #Maximum epsilon value. If in training mode, the -1 causes the "select_action" function to use a greedy policy only
+EPSILON_MIN = 0.01 #Minimum epsilon value
+EPSILON_DECAY = 0.999 #The decay rate for the epsilon value
+
+MAX_EPISODES = 2500 #Maximum number of training episode
+MAX_STEPS = 200 #The maximum steps allowed per training episode
+MEMORY_CAPACITY = 4000 if TRAINING_MODE else 0 #How large the memory replay buffer is. It should be large enough to retain enough state transitions to train the policy network
+
+#Environmental constants
+GAME = "frozen_lake" #Alternatively "cliff_walking"
+REWARD_SCHEDULE = (5, -1, -0.01) #When to give a reward to the agent and how high that reward is. The values are: Reach Goal, Reach Hole, Reach Frozen (includes Start), respectively
+NUM_STATES = MAP_SIZE ** 2 if GAME == "frozen_lake" else 48 #The total number of states the agent could potentially have for the given environment
+
+#Additional non-DQL related constants
+MAX_EVALUATING_EPISODES = 100 #Maximum number of testing/evaluating episodes
+RENDER = not TRAINING_MODE #What mode to render to environment in. Either None for no rendering at all or "human" for visible rendering.
+RECORDING_MODE = not TRAINING_MODE #Records video of the agent in evaluation mode
+LOAD_PATH = "./deep-q-learning/models/final_weights_" + str(MAX_EPISODES) + ".pth" #Loading path for the weights and biases used by the policy network in the testing/evaluating mode
+SAVE_PATH = "./deep-q-learning/models/final_weights" #Save path for the weights and biases of the policy network after training
+SAVE_INTERVAL = 100 #After how many training episodes should the weights and biases of the policy network be saved
+DEVICE = torch.device( #Checking which devices are available and selecting it based on that
+    "cuda" if torch.cuda.is_available() else
+    "mps" if torch.backends.mps.is_available() else
+    "cpu"
+)

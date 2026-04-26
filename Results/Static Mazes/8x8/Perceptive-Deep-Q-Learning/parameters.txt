@@ -1,0 +1,39 @@
+#Defining all hyperparameters for DQL
+CLIP_GRAD_NORM = 3 #How much to adjust the weight/biases of the policy network to match the target policy network during training. A too big value might lead to overshoots while a too small of a value will increase training time.
+LEARNING_RATE = 1e-4 #How much to adjust the weight/biases of the policy network to match the target policy network during training. A too big value might lead to overshoots while a too small of a value will increase training time. A too small of a value however can cause the training to be stuck in a local suboptimal minimum.
+DISCOUNT_FACTOR = 0.99 #Tells how much to take into account future rewards instead of immediate rewards.
+BATCH_SIZE = 64 #How big the batch batch of state transitions taken from the replay memory to train the policy network is.
+TARGET_UPDATE_STEPS = 200 #Instead of training every episode, the agent trains every TARGET_UPDATE_STEPS number of steps. Episode-based updates made the training rate unpredictable. For example a run of 1-step episodes would update the target network every steps, destroying stability.
+TRAIN_FREQ = 1 #Instead of training every step, the agent trains every TRAIN_FREQ steps. Makes training more stable.
+LEARNING_STARTS = 64 #The number of transitions that need to be stored first before the agent starts learning. Learning from a near-empty buffer produces extremely correlated batches.
+N_STEP = 3 #N-step returns. Instead of storing single-step transitions, the agent accumulates n steps and then stores the discounted n-step return. n=3 is a safe choice.
+
+EPSILON_MAX   = 0.999 if TRAINING_MODE else -1 #Maximum epsilon value. If in testing mode, -1 forces the "select_action" function to use a greedy policy only.
+EPSILON_MIN   = 0.01 #Minimum epsilon value.
+EPSILON_DECAY = 0.9999 #The decay rate for the epsilon value. Now per step instead of per episode.
+
+MAX_EPISODES    = 500 #Maximum number of training episode.
+MEMORY_CAPACITY = 2000 if TRAINING_MODE else 0 #How large the memory replay buffer is. It should be large enough to retain enough state transitions to train the policy network.
+
+#Environmental constants
+ENV_NAME         = "FrozenLake-v1" #Only this environement is used for this version of DQL.
+P_FROZEN         = 0.9 #Probability of a tile being frozen. Used by the random map generation function.
+REWARD_SCHEDULE  = (1, -1, -0.01) #Reach Goal, Reach Hole, Reach Frozen (includes Start)
+TILE_ENCODING    = {b'S': 0.0, b'F': 0.00, b'H': -1.0, b'G': 1.0} #{b'S': 0.0, b'F': 0.00, b'H': -1.0, b'G': 1.0} #Tile encoding for rich state: S (start) = 0.00, F (frozen) = 0.25, H (hole) = 1.00, G (goal) = 0.50. Those values were picked arbitrarily.
+NUM_OBSERVATIONS = 4 + MAP_SIZE ** 2 #Rich state observation dimensions. State vector: [norm_row, norm_col] + flattened encoded tile map.
+MAX_STEPS_TRAIN = 100 #Max number of training episode steps. training episodes need more steps than the FrozenLake-v1 default of 100 so that random exploration has a realistic chance of stumbling onto the goal.
+MAX_STEPS_TEST  = 100 #Max number of testing episode steps.
+GENERATE_MAP_PER_EPISODE = False #Parameter specific to perceptive models. Generates a new map every training episode to learn to generalize hole avoiding behaviour.
+
+#Additional non-DQL related constants
+MAX_EVALUATING_EPISODES = 100 #Maximum number of testing/evaluating episodes.
+RENDER          = not TRAINING_MODE #What mode to render to environment in. Either None for no rendering at all or "human" for visible rendering.
+RECORDING_MODE  = not TRAINING_MODE #Records video of the agent in evaluation mode.
+LOAD_PATH       = "./perceptive-deep-q-learning/models/final_weights_" + str(MAX_EPISODES) + ".pth" #Loading path for the weights and biases used by the policy network in the testing/evaluating mode.
+SAVE_PATH       = "./perceptive-deep-q-learning/models/final_weights" #Save path for the weights and biases of the policy network after training.
+SAVE_INTERVAL   = 100 #After how many training episodes should the weights and biases of the policy network be saved.
+DEVICE = torch.device( #Checking which devices are available and selecting it based on that.
+    "cuda" if torch.cuda.is_available() else
+    "mps"  if torch.backends.mps.is_available() else
+    "cpu"
+)
